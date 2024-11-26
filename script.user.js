@@ -1,8 +1,10 @@
 // ==UserScript==
-// @name         一网畅学（畅课）资源下载
+// @name         畅课平台资源下载
 // @namespace    https://bobliu.tech/
-// @version      2024-11-26
-// @description  下载一网畅学（畅课）平台的课程资源，即使老师设置了不可下载～
+// @version      1.0.1
+// @license      MIT
+// @supportURL   https://github.com/BobLiu0518/TronClass-Resource-Download/issues
+// @description  下载畅课（一网畅学）平台的课程资源，即使老师设置了不可下载～
 // @author       BobLiu
 // @match        https://*/course/*/learning-activity*
 // @icon         https://1906.usst.edu.cn/static/assets/images/favicon-b420ac72.ico

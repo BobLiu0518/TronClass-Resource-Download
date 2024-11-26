@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         畅课平台资源下载
 // @namespace    https://bobliu.tech/
-// @version      1.1.0
+// @version      1.1.1
 // @license      MIT
 // @supportURL   https://github.com/BobLiu0518/TronClass-Resource-Download/issues
 // @description  下载畅课（一网畅学）平台的课程资源，即使老师设置了不可下载～
@@ -38,9 +38,20 @@
         window.open(downloadUrl, '_blank');
     };
 
-    window.onload = function () {
-        let fileList =
-            document.getElementsByClassName('attachment-body')[0].children;
+    let inject = async function (retry) {
+        if (typeof retry == 'object') retry = 0;
+        let dom = document.getElementsByClassName('attachment-body')[0];
+        if (!dom) {
+            if (retry < 5) {
+                console.log('Cannot get file list dom, retrying in 1s...');
+                setTimeout(() => inject(retry + 1), 1000);
+            } else {
+                console.log('Cannot get file list dom, inject button failed.');
+            }
+            return;
+        }
+        let fileList = dom.children;
+
         for (let row of fileList) {
             let filename = row.children[0].children[0].textContent
                 .replaceAll(/\s*\n\s*/g, '')
@@ -55,10 +66,13 @@
                         event.stopPropagation();
                         window.downloadResource(parseInt(i) + 1);
                     };
-                    row.appendChild(downloadBtn);
+                    row.children[0].appendChild(downloadBtn);
                     break;
                 }
             }
         }
+        console.log('Download button injected.');
     };
+
+    addEventListener('load', inject);
 })();

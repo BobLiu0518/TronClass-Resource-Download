@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         畅课平台资源下载
 // @namespace    https://bobliu.tech/
-// @version      1.0.1
+// @version      1.1.0
 // @license      MIT
 // @supportURL   https://github.com/BobLiu0518/TronClass-Resource-Download/issues
 // @description  下载畅课（一网畅学）平台的课程资源，即使老师设置了不可下载～
 // @author       BobLiu
 // @match        https://*/course/*/learning-activity*
-// @icon         https://1906.usst.edu.cn/static/assets/images/favicon-b420ac72.ico
+// @icon         https://tronclass.com.cn/favicon.ico
 // @grant        none
 // ==/UserScript==
 
@@ -18,18 +18,47 @@
     let res = await fetch(
         `${host}/api/activities/${activityId}/upload_references`
     );
-    let resources = await res.json();
+    let resources = (await res.json()).references;
 
-    for (let id in resources.references) {
-        let resource = resources.references[id];
-        console.log(`[${parseInt(id) + 1}] ${resource.name}`);
+    if (!resources.length) {
+        console.log('No resources found.');
+        return;
     }
 
-    window.downloadResource = function (id) {
-        id = parseInt(id) - 1;
-        console.log(`Downloading ${resources.references[id].name}...`);
-        let downloadUrl = `${host}/api/uploads/reference/${resources.references[id].id}/blob`;
+    for (let id in resources) {
+        let resource = resources[id];
+        console.log(`[${parseInt(id) + 1}] ${resource.name}`);
+    }
+    console.log('Execute downloadResource(n) to download!');
+
+    window.downloadResource = function (i) {
+        i = parseInt(i) - 1;
+        console.log(`Downloading ${resources[i].name}...`);
+        let downloadUrl = `${host}/api/uploads/reference/${resources[i].id}/blob`;
         window.open(downloadUrl, '_blank');
     };
-    console.log('Execute downloadResource(n) to download!');
+
+    window.onload = function () {
+        let fileList =
+            document.getElementsByClassName('attachment-body')[0].children;
+        for (let row of fileList) {
+            let filename = row.children[0].children[0].textContent
+                .replaceAll(/\s*\n\s*/g, '')
+                .trim();
+            for (let i in resources) {
+                let resource = resources[i];
+                if (filename == resource.name) {
+                    let downloadBtn = document.createElement('button');
+                    downloadBtn.textContent = '下载';
+                    downloadBtn.onclick = function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        window.downloadResource(parseInt(i) + 1);
+                    };
+                    row.appendChild(downloadBtn);
+                    break;
+                }
+            }
+        }
+    };
 })();

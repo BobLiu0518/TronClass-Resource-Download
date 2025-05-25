@@ -4,6 +4,8 @@
 
 脚本目前只在上理工一网畅学平台测试过，如其他平台使用遇到问题，请发起 [Issue](https://github.com/BobLiu0518/TronClass-Resource-Download/issues)。
 
+`1.1.2` 更新：由于畅课平台方面封堵了原先的权限漏洞，旧版本已经无法使用，当前版本改为使用 [#2](https://github.com/BobLiu0518/TronClass-Resource-Download/issues/2) 中提到的接口，疑似只能将资源下载为 pdf 格式，有待后续研究。
+
 ## 使用方法
 
 1. 安装[篡改猴](https://www.tampermonkey.net/)；

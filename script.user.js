@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         畅课平台资源下载
 // @namespace    https://bobliu.tech/
-// @version      1.1.1
+// @version      1.1.2
 // @license      MIT
 // @supportURL   https://github.com/BobLiu0518/TronClass-Resource-Download/issues
 // @description  下载畅课（一网畅学）平台的课程资源，即使老师设置了不可下载～
@@ -15,9 +15,7 @@
     'use strict';
     let host = window.location.origin;
     let activityId = window.location.hash.replace('#/', '');
-    let res = await fetch(
-        `${host}/api/activities/${activityId}/upload_references`
-    );
+    let res = await fetch(`${host}/api/activities/${activityId}/upload_references`);
     let resources = (await res.json()).references;
 
     if (!resources.length) {
@@ -31,10 +29,15 @@
     }
     console.log('Execute downloadResource(n) to download!');
 
-    window.downloadResource = function (i) {
+    window.downloadResource = async function (i) {
         i = parseInt(i) - 1;
         console.log(`Downloading ${resources[i].name}...`);
-        let downloadUrl = `${host}/api/uploads/reference/${resources[i].id}/blob`;
+        let downloadUrlData = await fetch(`${host}/api/uploads/reference/document/${resources[i].id}/url`);
+        let downloadUrl = (await downloadUrlData.json()).url;
+        if (!downloadUrl) {
+            console.error('Failed to get download URL.');
+            return;
+        }
         window.open(downloadUrl, '_blank');
     };
 
@@ -53,9 +56,7 @@
         let fileList = dom.children;
 
         for (let row of fileList) {
-            let filename = row.children[0].children[0].textContent
-                .replaceAll(/\s*\n\s*/g, '')
-                .trim();
+            let filename = row.children[0].children[0].textContent.replaceAll(/\s*\n\s*/g, '').trim();
             for (let i in resources) {
                 let resource = resources[i];
                 if (filename == resource.name) {
